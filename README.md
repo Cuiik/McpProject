@@ -63,6 +63,7 @@ uv venv
 
 # 安装依赖
 uv pip install -r requirements.txt
+uv add dotenv 
 ```
 
 
