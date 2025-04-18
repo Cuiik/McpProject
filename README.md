@@ -116,7 +116,7 @@ MODEL=xxxx
 激活虚拟环境后
 
 ```bash
-python src/main.py src/mcpserver/weather_server.py npx:tavily-mcp@0.1.4 
+python src/main.py
 ```
 
 2、PyCharm
