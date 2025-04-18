@@ -49,7 +49,24 @@
 
 ### 环境设置
 
-根目录下复制 `.env example`  改名为`.env` 文件并设置必要的环境变量：
+
+
+## 环境配置：
+
+1. 拉取项目后 进到根目录下
+```
+# 创建虚拟环境
+uv venv
+
+# 激活虚拟环境
+.venv/bin/activate
+
+# 安装依赖
+uv pip install -r requirements.txt
+```
+
+
+2. 根目录下复制 `.env example`  改名为`.env` 文件并设置必要的环境变量：
 
 ```
 # 阿里百练的apikey
@@ -69,6 +86,8 @@ WEATHER_API_KEY=your_weather_api_key_if_needed
 ```
 
 ### 运行 （1或者2都可以）
+
+
 1、命令行
 
 可以同时连接多个服务器：(后续增加注意中间空格隔开)
@@ -80,7 +99,7 @@ python src/main.py src/mcpserver/WeatherServer.py npx:tavily-mcp@0.1.4
 
 2、PyCharm
 添加对应的启动参数即可
-如图
+
 
 ## 扩展指南
 
