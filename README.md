@@ -100,7 +100,7 @@ async def connect_to_server(self, server_identifier):
 ### 新加MCP工具服务
 1、如果是本地python，则参考WeatherServer.py，丢同一个路径下，然后在运行启动参数配置上对应路径即可
 
-2、如果是远程MCP服务 一般可能是npx（node包这种），直接加进启动参数即可，会自动用本地的node拉去，ps：注意node版本，tavily的要求node 20+
+2、如果是npx的MCP服务（node包这种），直接加进启动参数即可 ps：注意node版本，tavily的要求node 20+
 
 
 
