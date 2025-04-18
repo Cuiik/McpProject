@@ -64,7 +64,7 @@ TAVILY_API_KEY=your_tavily_api_key_if_needed
 WEATHER_API_KEY=your_weather_api_key_if_needed
 ```
 
-### 运行
+### 运行 （1或者2都可以）
 1、命令行
 
 可以同时连接多个服务器：(后续增加注意中间空格隔开)
