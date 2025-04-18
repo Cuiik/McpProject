@@ -7,28 +7,29 @@
 
 
 
-## 包名结构
+## 结构说明：
 
-分为以下几个核心模块：
-
-1. **配置管理** (`config`)
+1. **配置管理** (`config.py`)
    - 负责从环境变量加载和验证配置
-   - 管理不同工具所需的特定环境变量
 
-2. **MCP服务器类型连接器** (`serverconnector`)
+2. **MCP服务器类型连接器** (`server_connector.py`)
    - 负责连接和管理多个 MCP 服务器
    - 支持连接本地脚本和 NPX 包
-   - 提供跨服务器的工具查找和调用功能
 
-3. **模型客户端** (`modelclient`)
-   - `ModelClient.py`是参考阿里百练的qwq-plus的function calling例子改的
+3. **模型客户端** (`model_client.py`)
    - 负责与大模型 API 交互
    - 处理流式响应、工具调用和结果处理
 
-4. **本地MCP服务** (`mcpserver`)
+4. **存放本地MCP服务(py)** (`mcpserver`)
    - 存放本地python的mcp服务，可自行扩展开发
 
-5. **主应用** (`main.py`)
+5. **MCP配置信息加载器** (`mcp_config_loader.py`)
+   - 解析`mcp_servers.json`文件的配置信息
+
+6. **MCP配置文件** (`mcp_servers.json`)
+   - 功能和Cursor的MCP文件一致的配置文件
+   
+7. **主应用** (`main.py`)
    - 整合上述所有模块
    - 提供命令行界面和交互式聊天
 
@@ -47,7 +48,6 @@
 
 ## 使用方法
 
-### 环境设置
 
 
 
@@ -77,65 +77,52 @@ DASHSCOPE_API_KEY=your_dashscope_api_key
 BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
 
 # 选择模型
-MODEL=qwq-plus
+MODEL=xxxx
 
-# TAVILY_API_KEY
-TAVILY_API_KEY=your_tavily_api_key_if_needed
- 
-# openweather 天气的apikey
-WEATHER_API_KEY=your_weather_api_key_if_needed
 ```
+
+
+## 添加MCP
+
+基于JSON文件统一管理
+
+复制 `mcp_servers.json example`  改名为`mcp_servers.json` 文件
+
+1. 新增的MCP服务如果是自己写的py，则参考weather_server.py，
+
+2. 如果是其他远程MCP则复制对应MCP的JSON，添加进mcp_servers.json（和cursor的配置一致）
+
+```json
+{
+  "mcpServers": {
+
+    "YourMcpName": {
+      "disabled": false,
+      "command": "xxx",
+      "args": ["xxx"],
+      "env": {}
+    }
+     
+  }
+}
+```
+
 
 ### 运行 （1或者2都可以）
 
 
 1、命令行
 
-可以同时连接多个服务器：(后续增加注意中间空格隔开)
-目前就一个天气的，
+激活虚拟环境后
 
 ```bash
-python src/main.py src/mcpserver/WeatherServer.py npx:tavily-mcp@0.1.4 
+python src/main.py src/mcpserver/weather_server.py npx:tavily-mcp@0.1.4 
 ```
 
 2、PyCharm
-添加对应的启动参数即可
-
-
-## 扩展指南
-
-### 添加新的服务器类型(注意不是添加新的MCP，而是添加新的 MCP服务类型，MCP支持多语言类型的，比如java、py、c)
-
-修改 `serverConnector.py` 中的 `connect_to_server` 方法：
-
-```python
-async def connect_to_server(self, server_identifier):
-    # 现有的处理逻辑...
-    
-    # 添加新的服务器类型支持
-    if server_identifier.startswith("new-type:"):
-        _, params = server_identifier.split(":", 1)
-        return await self.connect_to_new_type(params)
-```
-
-
-
-### 新加MCP工具服务
-1、如果是本地python，则参考WeatherServer.py，丢同一个路径下，然后在运行启动参数配置上对应路径即可
-
-2、如果是npx的MCP服务（node包这种），直接加进启动参数即可 ps：注意node版本，tavily的要求node 20+
+也可PyCharm运行
 
 
 
 
-PS：如果是对应是需要apikey的如下添加： 修改 `Config.py` 中的 `get_tool_env` 方法：
 
-```python
-def get_tool_env(self, tool_name):
-    tool_env_map = {
-        "tavily-mcp": {"TAVILY_API_KEY": self.tavily_api_key},
-        "new-tool": {"NEW_TOOL_API_KEY": os.getenv("NEW_TOOL_API_KEY")}
-    }
-    
-    return {k: v for k, v in tool_env_map.get(tool_name, {}).items() if v is not None}
-```

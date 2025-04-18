@@ -1,0 +1,32 @@
+{
+  "mcpServers": {
+
+
+    "weather_forecast": {
+      "command": "python",
+      "args": [
+        "src\\mcpserver\\weather_server.py"
+      ],
+
+      "disabled": false,
+      "autoApprove": ["get_weather", "get_current_weather"]
+    },
+
+
+    "tavily-mcp": {
+      "disabled": false,
+      "command": "npx",
+      "args": [
+        "-y",
+        "tavily-mcp@0.1.4"
+      ],
+      "env": {
+        "TAVILY_API_KEY": "Your_API_KEY"
+      }
+    },
+
+
+
+
+  }
+}

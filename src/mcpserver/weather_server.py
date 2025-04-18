@@ -12,7 +12,7 @@ mcp = FastMCP("WeatherServer")
 
 # OpenWeather API 配置
 OPENWEATHER_API_BASE = "https://api.openweathermap.org/data/2.5/weather"
-API_KEY = os.getenv("WEATHER_API_KEY")  # 从环境变量中读取API_KEY
+API_KEY = os.getenv("OPENWEATHER_API_KEY")  # 从环境变量中读取API_KEY
 USER_AGENT = "weather-app/1.0"
 
 
@@ -22,6 +22,10 @@ async def fetch_weather(city: str) -> dict[str, Any] | None:
     :param city: 城市名称（需使用英文，如 Beijing）
     :return: 天气数据字典；若出错返回包含 error 信息的字典
     """
+
+    if not API_KEY:
+        raise ValueError("❌ 未找到 OPENWEATHER_API_KEY 请配置在json文件中")
+
     params = {
         "q": city,
         "appid": API_KEY,

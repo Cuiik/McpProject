@@ -5,9 +5,10 @@ import logging
 from contextlib import AsyncExitStack
 
 # 导入自定义模块
-from config.Config import Config
-from serverconnector.ServerConnector import ServerConnector
-from modelclient.ModelClient import ModelClient
+from config.config import Config
+from serverconnector.server_connector import ServerConnector
+from modelclient.model_client import ModelClient
+from config.mcp_config_loader import MCPConfigLoader  # 导入配置加载器
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -16,18 +17,25 @@ logger = logging.getLogger(__name__)
 class MCPApp:
     """MCP应用主类，整合配置、连接器和模型客户端"""
 
-    def __init__(self):
+    def __init__(self, config_file_path="mcp_servers.json"):
         self.exit_stack = AsyncExitStack()
         self.config = Config()
         self.server_connector = ServerConnector(self.config, self.exit_stack)
         self.model_client = ModelClient(self.config)
+        self.mcp_config = MCPConfigLoader(config_file_path)
 
-    async def initialize(self, server_identifiers):
-        """初始化应用，连接到所有指定的服务器"""
+    async def initialize(self):
+        """初始化应用，连接到配置文件中启用的所有服务器"""
+        enabled_servers = self.mcp_config.get_enabled_servers()
         connected_count = 0
-        for server_id in server_identifiers:
+
+        if not enabled_servers:
+            logger.warning("没有找到已启用的MCP服务器配置")
+            return False
+
+        for server_id, server_config in enabled_servers.items():
             try:
-                await self.server_connector.connect_to_server(server_id)
+                await self.server_connector.connect_to_server(server_id, server_config)
                 print(f"✅ 已连接到服务器: {server_id}")
                 connected_count += 1
             except Exception as e:
@@ -72,17 +80,14 @@ class MCPApp:
 
 async def main():
     """主函数"""
-    if len(sys.argv) < 2:
-        print("Usage: python main.py <server1> [server2 ...]")
-        print("Example: python main.py npx:tavily-mcp@0.1.4 ./local_server.py")
-        sys.exit(1)
+    # 允许用户指定配置文件路径
+    config_file = "mcp_servers.json"
+    if len(sys.argv) > 1:
+        config_file = sys.argv[1]
 
-    # 获取所有服务器标识符
-    server_identifiers = sys.argv[1:]
-
-    app = MCPApp()
+    app = MCPApp(config_file)
     try:
-        connected = await app.initialize(server_identifiers)
+        connected = await app.initialize()
         if not connected:
             print("⚠️ 未能成功连接到任何服务器，程序将退出")
             return

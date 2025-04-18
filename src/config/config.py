@@ -23,8 +23,7 @@ class Config:
         # 如果没配置 默认用qwq-plus
         self.model = os.getenv("MODEL", "qwq-plus")
 
-        # 工具相关配置
-        self.tavily_api_key = os.getenv("TAVILY_API_KEY")
+
 
         # 验证必要配置
         self._validate_config()
@@ -34,10 +33,11 @@ class Config:
         if not self.dashscope_api_key:
             raise ValueError("❌ 未找到 DASHSCOPE API Key，请在 .env 文件中设置 DASHSCOPE_API_KEY")
 
-    def get_tool_env(self, tool_name):
-        """根据工具名称返回需要的环境变量"""
-        tool_env_map = {
-            "tavily-mcp": {"TAVILY_API_KEY": self.tavily_api_key}
-        }
-
-        return {k: v for k, v in tool_env_map.get(tool_name, {}).items() if v is not None}
+    # def get_tool_env(self, tool_name):
+    #     """根据工具名称返回需要的环境变量 apikey 弃用"""
+    #     tool_env_map = {
+    #         "tavily-mcp": {"TAVILY_API_KEY": os.getenv("TAVILY_API_KEY")},
+    #
+    #     }
+    #
+    #     return {k: v for k, v in tool_env_map.get(tool_name, {}).items() if v is not None}
