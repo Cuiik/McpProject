@@ -4,11 +4,7 @@
 [//]: # (这是一个模块化、可扩展的 MCP &#40;Model Control Protocol&#41; 客户端实现，用于连接大模型 API 和多个工具服务器。)
 
 
-## 前置需要：
-1. cmd 安装uv ：
-```
-powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-```
+
 
 
 
