@@ -47,7 +47,15 @@ class ServerConnector:
     # 保留原有的方法但可能不再使用
     async def connect_to_script(self, script_path):
         """连接到本地脚本服务器"""
-        command = "python"
+        # 检查脚本类型
+        is_python = script_path.endswith('.py')
+        is_js = script_path.endswith('.js')
+
+        if not (is_python or is_js):
+            raise ValueError("服务器脚本必须是 .py 或 .js 文件")
+
+        # 根据脚本类型选择执行命令 其他类型则需自行适配
+        command = "python" if is_python else "node"
         server_params = StdioServerParameters(
             command=command,
             args=[script_path],
@@ -55,6 +63,33 @@ class ServerConnector:
         )
 
         server_id = f"script:{script_path}"
+        return await self._connect_with_params(server_params, server_id)
+
+    # 保留原有的方法但可能不再使用
+    async def connect_to_npx_server(self, package_name,server_config):
+        """连接到通过 npx 安装的 MCP 服务器"""
+        logger.info(f"正在连接到 npx 包: {package_name}")
+
+        # 设置环境变量
+        env = os.environ.copy()
+        config_env = server_config.get("env", {})
+
+        # 检查是否有特定包需要特殊处理
+        #  package_base = package_name.split('@')[0] if '@' in package_name else package_name
+        # tool_env = self.config.get_tool_env(package_base)
+        #
+        # # 合并环境变量
+        # if tool_env:
+        #     env.update(tool_env)
+        #     logger.info(f"为 {package_base} 配置了特定环境变量")
+
+        server_params = StdioServerParameters(
+            command="npx",
+            args=["-y", package_name],
+            env=config_env
+        )
+
+        server_id = f"npx:{package_name}"
         return await self._connect_with_params(server_params, server_id)
 
     async def _connect_with_params(self, server_params, server_id):
